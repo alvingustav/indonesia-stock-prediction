@@ -1,0 +1,141 @@
+name: Deploy Indonesia Stock Prediction to Azure Container Apps
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+env:
+  AZURE_RESOURCE_GROUP: stock-prediction-rg
+  AZURE_CONTAINER_APP: indonesia-stock-prediction
+  AZURE_CONTAINER_REGISTRY: stockpredictionacr
+  AZURE_ENVIRONMENT: stock-prediction-env
+  IMAGE_NAME: stock-prediction-app
+  AZURE_LOCATION: japaneast
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout repository
+      uses: actions/checkout@v4
+      with:
+        lfs: true
+    
+    - name: 🔑 Log in to Azure
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    
+    - name: 📊 Set up environment variables
+      run: |
+        echo "TIMESTAMP=$(date +%Y%m%d-%H%M%S)" >> $GITHUB_ENV
+        echo "SHORT_SHA=$(echo $GITHUB_SHA | cut -c1-7)" >> $GITHUB_ENV
+    
+    - name: 🏗️ Create Azure resources (if not exists)
+      run: |
+        # Create resource group
+        az group create \
+          --name ${{ env.AZURE_RESOURCE_GROUP }} \
+          --location ${{ env.AZURE_LOCATION }} \
+          --output none || true
+        
+        # Create container registry
+        az acr create \
+          --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+          --name ${{ env.AZURE_CONTAINER_REGISTRY }} \
+          --sku Basic \
+          --admin-enabled true \
+          --output none || true
+        
+        # Create container apps environment
+        az containerapp env create \
+          --name ${{ env.AZURE_ENVIRONMENT }} \
+          --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+          --location ${{ env.AZURE_LOCATION }} \
+          --output none || true
+    
+    - name: 🐳 Build and push Docker image
+      run: |
+        az acr build \
+          --registry ${{ env.AZURE_CONTAINER_REGISTRY }} \
+          --image ${{ env.IMAGE_NAME }}:${{ env.SHORT_SHA }} \
+          --image ${{ env.IMAGE_NAME }}:latest \
+          --file Dockerfile \
+          .
+    
+    - name: 🚀 Deploy to Container Apps
+      run: |
+        # Get ACR login server
+        ACR_SERVER=$(az acr show --name ${{ env.AZURE_CONTAINER_REGISTRY }} --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --query "loginServer" --output tsv)
+        
+        # Get ACR credentials
+        ACR_USERNAME=$(az acr credential show --name ${{ env.AZURE_CONTAINER_REGISTRY }} --query "username" --output tsv)
+        ACR_PASSWORD=$(az acr credential show --name ${{ env.AZURE_CONTAINER_REGISTRY }} --query "passwords[0].value" --output tsv)
+        
+        # Check if container app exists
+        if az containerapp show --name ${{ env.AZURE_CONTAINER_APP }} --resource-group ${{ env.AZURE_RESOURCE_GROUP }} &> /dev/null; then
+          echo "🔄 Updating existing container app..."
+          az containerapp update \
+            --name ${{ env.AZURE_CONTAINER_APP }} \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --image $ACR_SERVER/${{ env.IMAGE_NAME }}:${{ env.SHORT_SHA }}
+        else
+          echo "🆕 Creating new container app..."
+          az containerapp create \
+            --name ${{ env.AZURE_CONTAINER_APP }} \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --environment ${{ env.AZURE_ENVIRONMENT }} \
+            --image $ACR_SERVER/${{ env.IMAGE_NAME }}:${{ env.SHORT_SHA }} \
+            --target-port 8501 \
+            --ingress external \
+            --registry-server $ACR_SERVER \
+            --registry-username $ACR_USERNAME \
+            --registry-password $ACR_PASSWORD \
+            --cpu 1.0 \
+            --memory 2.0Gi \
+            --min-replicas 1 \
+            --max-replicas 3 \
+            --env-vars \
+              "STREAMLIT_SERVER_PORT=8501" \
+              "STREAMLIT_SERVER_ADDRESS=0.0.0.0" \
+              "AZURE_OPENAI_ENDPOINT=${{ secrets.AZURE_OPENAI_ENDPOINT }}" \
+              "AZURE_OPENAI_API_KEY=${{ secrets.AZURE_OPENAI_API_KEY }}" \
+              "AZURE_OPENAI_DEPLOYMENT=${{ secrets.AZURE_OPENAI_DEPLOYMENT }}"
+        fi
+    
+    - name: 🌐 Get application URL
+      run: |
+        APP_URL=$(az containerapp show \
+          --name ${{ env.AZURE_CONTAINER_APP }} \
+          --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+          --query "properties.configuration.ingress.fqdn" \
+          --output tsv)
+        
+        echo "✅ Deployment completed successfully!"
+        echo "🌐 Application URL: https://$APP_URL"
+        echo "📊 Azure Portal: https://portal.azure.com/#@/resource/subscriptions/$(az account show --query id -o tsv)/resourceGroups/${{ env.AZURE_RESOURCE_GROUP }}/providers/Microsoft.App/containerApps/${{ env.AZURE_CONTAINER_APP }}"
+        
+        # Set output for other steps
+        echo "app_url=https://$APP_URL" >> $GITHUB_OUTPUT
+    
+    - name: 🧪 Health check
+      run: |
+        APP_URL=$(az containerapp show \
+          --name ${{ env.AZURE_CONTAINER_APP }} \
+          --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+          --query "properties.configuration.ingress.fqdn" \
+          --output tsv)
+        
+        echo "⏳ Waiting for application to be ready..."
+        sleep 60
+        
+        # Check health endpoint
+        if curl -f --max-time 30 "https://$APP_URL/_stcore/health" > /dev/null 2>&1; then
+          echo "✅ Health check passed!"
+        else
+          echo "⚠️ Health check failed, but deployment may still be starting up"
+        fi
