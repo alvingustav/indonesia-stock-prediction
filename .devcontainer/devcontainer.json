@@ -1,5 +1,5 @@
 {
-    "name": "Indonesia Stock Prediction - ML & Azure",
+    "name": "Indonesia Stock Prediction - Pre-trained Models",
     "dockerFile": "Dockerfile",
     "customizations": {
         "vscode": {
@@ -11,29 +11,36 @@
                 "ms-azuretools.vscode-docker",
                 "ms-azuretools.vscode-azurecontainerapps",
                 "charliermarsh.ruff",
-                "GitHub.copilot"
+                "GitHub.copilot",
+                "eamodio.gitlens"
             ],
             "settings": {
                 "python.defaultInterpreterPath": "/opt/conda/bin/python",
                 "python.linting.enabled": true,
                 "python.formatting.provider": "black",
-                "terminal.integrated.shell.linux": "/bin/bash"
+                "terminal.integrated.shell.linux": "/bin/bash",
+                "git.lfs.enabled": true
             }
         }
     },
     "forwardPorts": [8501],
     "portsAttributes": {
         "8501": {
-            "label": "Streamlit App",
-            "onAutoForward": "openPreview"
+            "label": "Stock Prediction App",
+            "onAutoForward": "openPreview",
+            "protocol": "http"
         }
     },
     "postCreateCommand": "bash scripts/setup-codespace.sh",
-    "postAttachCommand": "echo '🚀 Codespace ready! Run: streamlit run app.py'",
+    "postAttachCommand": "bash scripts/setup-models.sh",
     "remoteUser": "vscode",
     "features": {
         "ghcr.io/devcontainers/features/azure-cli:1": {},
         "ghcr.io/devcontainers/features/docker-in-docker:2": {},
-        "ghcr.io/devcontainers/features/git:1": {}
-    }
+        "ghcr.io/devcontainers/features/git:1": {},
+        "ghcr.io/devcontainers/features/git-lfs:1": {}
+    },
+    "mounts": [
+        "source=${localWorkspaceFolder}/models,target=/workspace/models,type=bind,consistency=cached"
+    ]
 }
