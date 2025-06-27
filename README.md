@@ -134,7 +134,7 @@ indonesia-stock-prediction/
 - Azure OpenAI resource (untuk valuation analysis)
 
 ### 1. Clone Repository
-git clone https://github.com/your-username/indonesia-stock-prediction.git
+git clone https://github.com/alvingustav/indonesia-stock-prediction.git
 cd indonesia-stock-prediction
 
 
