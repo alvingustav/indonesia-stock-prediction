@@ -1,6 +1,6 @@
 {
-    "name": "Indonesia Stock Prediction - Pre-trained Models",
-    "dockerFile": "Dockerfile",
+    "name": "Indonesia Stock Prediction",
+    "image": "mcr.microsoft.com/devcontainers/python:3.9",
     "customizations": {
         "vscode": {
             "extensions": [
@@ -9,38 +9,26 @@
                 "ms-toolsai.jupyter",
                 "ms-vscode.azurecli",
                 "ms-azuretools.vscode-docker",
-                "ms-azuretools.vscode-azurecontainerapps",
-                "charliermarsh.ruff",
-                "GitHub.copilot",
-                "eamodio.gitlens"
+                "ms-azuretools.vscode-azurecontainerapps"
             ],
             "settings": {
-                "python.defaultInterpreterPath": "/opt/conda/bin/python",
+                "python.defaultInterpreterPath": "/usr/local/bin/python",
                 "python.linting.enabled": true,
-                "python.formatting.provider": "black",
-                "terminal.integrated.shell.linux": "/bin/bash",
-                "git.lfs.enabled": true
+                "python.formatting.provider": "black"
             }
         }
     },
     "forwardPorts": [8501],
     "portsAttributes": {
         "8501": {
-            "label": "Stock Prediction App",
-            "onAutoForward": "openPreview",
-            "protocol": "http"
+            "label": "Streamlit App",
+            "onAutoForward": "openPreview"
         }
     },
-    "postCreateCommand": "bash scripts/setup-codespace.sh",
-    "postAttachCommand": "bash scripts/setup-models.sh",
+    "postCreateCommand": "pip install -r requirements.txt",
     "remoteUser": "vscode",
     "features": {
         "ghcr.io/devcontainers/features/azure-cli:1": {},
-        "ghcr.io/devcontainers/features/docker-in-docker:2": {},
-        "ghcr.io/devcontainers/features/git:1": {},
-        "ghcr.io/devcontainers/features/git-lfs:1": {}
-    },
-    "mounts": [
-        "source=${localWorkspaceFolder}/models,target=/workspace/models,type=bind,consistency=cached"
-    ]
+        "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+    }
 }

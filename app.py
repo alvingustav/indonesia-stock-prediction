@@ -190,9 +190,31 @@ def main():
     # Tabs
     tab1, tab2, tab3 = st.tabs(["📈 Price Analysis", "🤖 AI Prediction", "💰 Valuation Report"])
     
+    import plotly.graph_objects as go
     with tab1:
         # Price chart and analysis code here
-        st.info("📈 Price chart implementation")
+        st.subheader("📈 Price Chart")
+        recent_data = stock_data.tail(360) if len(stock_data) > 360 else stock_data
+    # Buat candlestick chart
+        fig = go.Figure(data=[go.Candlestick(
+            x=recent_data.index,
+            open=recent_data['Open'],
+            high=recent_data['High'],
+            low=recent_data['Low'],
+            close=recent_data['Close'],
+            name="Candlestick"
+       )])
+
+        fig.update_layout(
+            title=f"{selected_stock} Price Chart (Last {len(recent_data)} Days)",
+            xaxis_title="Date",
+            yaxis_title="Price",
+            xaxis_rangeslider_visible=False,
+            template="plotly_white",
+            height=500
+       )
+
+        st.plotly_chart(fig, use_container_width=True)
     
     with tab2:
         st.subheader("🤖 AI Price Prediction")

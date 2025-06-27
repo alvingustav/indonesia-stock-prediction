@@ -33,6 +33,8 @@ class DataCollector:
                 if (current_time - cache_time).seconds < self.cache_ttl:
                     return cached_data
             
+            if symbol == 'JKSE.JK':
+                symbol = '^JKSE'
             # Fetch fresh data
             ticker = yf.Ticker(symbol)
             data = ticker.history(period=period)

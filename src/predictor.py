@@ -44,10 +44,10 @@ class StockPredictor:
                 return None, None, None
             
             # Add .JK suffix jika perlu
-            stock_symbol = f"{symbol}.JK" if not symbol.endswith('.JK') and symbol != 'IHSG' else symbol
-            if symbol == 'IHSG':
-                stock_symbol = '^JKSE'
-            
+            if symbol.startswith('^'):
+                stock_symbol = symbol  # Untuk indeks seperti IHSG, tidak diubah
+            else:
+                stock_symbol = f"{symbol}.JK" if not symbol.endswith('.JK') else symbol
             # Fetch stock data
             stock_data = self.data_collector.get_stock_data(stock_symbol, period)
             if stock_data is None or stock_data.empty:
