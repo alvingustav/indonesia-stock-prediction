@@ -92,16 +92,24 @@ text
 - **GitHub Codespaces** - Cloud development environment
 
 ## 📁 Project Structure
-
 indonesia-stock-prediction/
+
 ├── 📂 .devcontainer/ # GitHub Codespaces configuration
+
 │ ├── devcontainer.json
+
 │ └── Dockerfile
+
 ├── 📂 .github/workflows/ # CI/CD pipeline
+
 │ └── deploy-azure.yml
+
 ├── 📂 models/ # Pre-trained models (Git LFS)
+
 │ ├── stock_prediction_model.h5
+
 │ ├── scalers.pkl
+
 │ ├── model_config.pkl
 │ └── feature_columns.json
 ├── 📂 src/ # Source code
