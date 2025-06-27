@@ -165,7 +165,7 @@ Akses aplikasi di `http://localhost:8501`
 Login ke Azure
 az login
 
-One-command deploy
+One-command deploy</br >
 az containerapp up
 --name indonesia-stock-prediction
 --resource-group stock-prediction-rg
