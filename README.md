@@ -95,34 +95,34 @@ text
 indonesia-stock-prediction/
 
 ├── 📂 .devcontainer/ # GitHub Codespaces configuration </br >
-│ ├── devcontainer.json
-│ └── Dockerfile
-├── 📂 .github/workflows/ # CI/CD pipeline
-│ └── deploy-azure.yml
-├── 📂 models/ # Pre-trained models (Git LFS)
-│ ├── stock_prediction_model.h5
-│ ├── scalers.pkl
-│ ├── model_config.pkl
-│ └── feature_columns.json
-├── 📂 src/ # Source code
-│ ├── config.py # Configuration settings
-│ ├── model_loader.py # Model loading utilities
-│ ├── predictor.py # Stock prediction engine
-│ ├── valuation_analyzer.py # Azure OpenAI integration
-│ ├── data_collector.py # Yahoo Finance data fetching
-│ └── utils.py # Utility functions
-├── 📂 scripts/ # Deployment scripts
-│ ├── setup-azure.sh
-│ ├── deploy.sh
-│ └── verify-models.py
-├── 📂 .streamlit/ # Streamlit configuration
-│ └── config.toml
-├── 📂 notebooks/ # Jupyter notebooks untuk training
-│ └── Stock_Prediction_Model.ipynb
-├── 🐳 Dockerfile # Container configuration
-├── 📄 app.py # Main Streamlit application
-├── 📋 requirements.txt # Python dependencies
-├── 🔧 .env.example # Environment variables template
+│ ├── devcontainer.json</br >
+│ └── Dockerfile</br >
+├── 📂 .github/workflows/ # CI/CD pipeline</br >
+│ └── deploy-azure.yml</br >
+├── 📂 models/ # Pre-trained models (Git LFS)</br >
+│ ├── stock_prediction_model.h5</br >
+│ ├── scalers.pkl</br >
+│ ├── model_config.pkl</br >
+│ └── feature_columns.json</br >
+├── 📂 src/ # Source code</br >
+│ ├── config.py # Configuration settings</br >
+│ ├── model_loader.py # Model loading utilities</br >
+│ ├── predictor.py # Stock prediction engine</br >
+│ ├── valuation_analyzer.py # Azure OpenAI integration</br >
+│ ├── data_collector.py # Yahoo Finance data fetching</br >
+│ └── utils.py # Utility functions</br >
+├── 📂 scripts/ # Deployment scripts</br >
+│ ├── setup-azure.sh</br >
+│ ├── deploy.sh</br >
+│ └── verify-models.py</br >
+├── 📂 .streamlit/ # Streamlit configuration</br >
+│ └── config.toml</br >
+├── 📂 notebooks/ # Jupyter notebooks untuk training</br >
+│ └── Stock_Prediction_Model.ipynb</br >
+├── 🐳 Dockerfile # Container configuration</br >
+├── 📄 app.py # Main Streamlit application</br >
+├── 📋 requirements.txt # Python dependencies</br >
+├── 🔧 .env.example # Environment variables template</br >
 └── 📖 README.md # Project documentation
 
 
@@ -336,9 +336,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Support
 
-- **Documentation**: [Wiki](https://github.com/your-username/indonesia-stock-prediction/wiki)
-- **Issues**: [GitHub Issues](https://github.com/your-username/indonesia-stock-prediction/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/your-username/indonesia-stock-prediction/discussions)
+- **Documentation**: [Wiki](https://github.com/alvingustav/indonesia-stock-prediction/wiki)
+- **Issues**: [GitHub Issues](https://github.com/alvingustav/indonesia-stock-prediction/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/alvingustav/indonesia-stock-prediction/discussions)
 
 ## 🗺️ Roadmap
 
